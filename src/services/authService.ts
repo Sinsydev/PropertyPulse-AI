@@ -1,14 +1,30 @@
-import {
+ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
 
- import { auth } from "../lib/firebase";
+import { auth, db } from "../lib/firebase";
+import { doc, setDoc } from "firebase/firestore";
 
-// 🔐 SIGN UP
-export const signup = (email: string, password: string) => {
-  return createUserWithEmailAndPassword(auth, email, password);
+// 🔐 SIGN UP + CREATE USER IN DB
+export const signup = async (email: string, password: string) => {
+  const userCredential = await createUserWithEmailAndPassword(
+    auth,
+    email,
+    password
+  );
+
+  const user = userCredential.user;
+
+  // 🧠 store user in Firestore
+  await setDoc(doc(db, "users", user.uid), {
+    email: user.email,
+    createdAt: new Date(),
+    businessId: null,
+  });
+
+  return userCredential;
 };
 
 // 🔑 LOGIN
