@@ -1,62 +1,53 @@
 import { useState } from "react";
-import { login, signup } from "../services/authService";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../lib/firebase";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const nav = useNavigate();
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
-    await login(email, password);
-    nav("/dashboard");
-  };
-
-  const handleSignup = async () => {
-    await signup(email, password);
-    nav("/dashboard");
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      navigate("/dashboard");
+    }  catch (err) {
+  if (err instanceof Error) {
+    alert(err.message);
+  } else {
+    alert("Something went wrong");
+  }
+}
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black text-white">
-      
-      <div className="w-96 p-8 border border-gray-800 rounded-xl">
+    <div className="h-screen flex items-center justify-center bg-black text-white">
+      <div className="p-8 bg-white/5 border border-yellow-500/20 rounded-2xl w-[350px]">
 
-        <h1 className="text-2xl font-bold mb-6 text-center">
-          PropertyPulse AI Login
-        </h1>
+        <h2 className="text-2xl font-bold mb-6">Login</h2>
 
         <input
-          className="w-full p-2 mb-3 text-black"
           placeholder="Email"
+          className="w-full p-2 mb-3 bg-black border border-gray-700 rounded"
           onChange={(e) => setEmail(e.target.value)}
         />
 
         <input
-          className="w-full p-2 mb-4 text-black"
-          type="password"
           placeholder="Password"
+          type="password"
+          className="w-full p-2 mb-3 bg-black border border-gray-700 rounded"
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <div className="flex gap-3">
-          <button
-            onClick={handleLogin}
-            className="bg-green-500 px-4 py-2 w-full"
-          >
-            Login
-          </button>
-
-          <button
-            onClick={handleSignup}
-            className="border px-4 py-2 w-full"
-          >
-            Signup
-          </button>
-        </div>
+        <button
+          onClick={handleLogin}
+          className="w-full py-2 bg-yellow-500 text-black font-semibold rounded"
+        >
+          Login
+        </button>
 
       </div>
-
     </div>
   );
 }

@@ -1,8 +1,10 @@
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import Herobg from "../assets/Herobg.webp";
 
 import {
-  Phone,
+  Mail,
+  MapPin,
   Bot,
   CalendarCheck,
   Wrench,
@@ -11,9 +13,12 @@ import {
   Radar,
   CheckCircle,
   PhoneCall,
+  Phone,
 } from "lucide-react";
 
 export default function Landing() {
+  const navigate = useNavigate();
+
   return (
     <div className="bg-black text-white min-h-screen">
 
@@ -24,11 +29,15 @@ export default function Landing() {
         </h1>
 
         <div className="flex gap-4 items-center">
-          <button className="text-sm text-gray-300 hover:text-white">
+          <button
+            onClick={() => navigate("/login")}
+            className="text-sm text-gray-300 hover:text-white"
+          >
             Sign In
           </button>
 
           <button
+            onClick={() => navigate("/signup")}
             className="px-4 py-2 rounded-lg text-black font-semibold"
             style={{
               background: "linear-gradient(135deg,#D4AF37,#f5d76e)",
@@ -42,7 +51,6 @@ export default function Landing() {
       {/* HERO */}
       <section className="flex flex-col md:flex-row items-center justify-between max-w-6xl mx-auto px-6 py-24 gap-12">
 
-        {/* LEFT */}
         <div className="flex-1 text-center md:text-left">
 
           <motion.h1
@@ -63,6 +71,7 @@ export default function Landing() {
 
           <div className="mt-6 flex items-center gap-4">
             <button
+              onClick={() => navigate("/signup")}
               className="px-6 py-3 rounded-xl font-semibold"
               style={{
                 background: "linear-gradient(135deg,#D4AF37,#f5d76e)",
@@ -78,7 +87,7 @@ export default function Landing() {
           </div>
         </div>
 
-        {/* RIGHT IMAGE */}
+        {/* IMAGE */}
         <motion.div
           animate={{ y: [0, -12, 0] }}
           transition={{ repeat: Infinity, duration: 3 }}
@@ -126,20 +135,17 @@ export default function Landing() {
 
       {/* SERVICES */}
       <section className="text-center py-20 px-6">
-
-        <h2 className="text-3xl font-bold">
-          Built for Service Businesses
-        </h2>
+        <h2 className="text-3xl font-bold">Built for Service Businesses</h2>
 
         <div className="grid md:grid-cols-3 gap-6 mt-12 max-w-5xl mx-auto">
 
           {[
-            { icon: <Wrench />, title: "Auto Repair", desc: "Mechanic & garage automation." },
+            { icon: <Wrench />, title: "Auto Repair", desc: "Mechanic automation." },
             { icon: <Droplets />, title: "Plumbing", desc: "Emergency call handling." },
-            { icon: <Sparkles />, title: "Real Estate", desc: "Instant property lead capture." },
-            { icon: <Sparkles />, title: "Cleaning Services", desc: "Home & office bookings." },
-            { icon: <Wrench />, title: "Electrical", desc: "Electrician job scheduling." },
-            { icon: <Radar />, title: "HVAC Services", desc: "AC & heating automation." },
+            { icon: <Sparkles />, title: "Real Estate", desc: "Instant lead capture." },
+            { icon: <Sparkles />, title: "Cleaning", desc: "Booking automation." },
+            { icon: <Wrench />, title: "Electrical", desc: "Job scheduling." },
+            { icon: <Radar />, title: "HVAC", desc: "Service automation." },
           ].map((item, i) => (
             <div
               key={i}
@@ -166,17 +172,17 @@ export default function Landing() {
             {
               icon: <Phone className="text-yellow-400 w-6 h-6" />,
               title: "Connect Your Phone",
-              desc: "We link your business number to AI system.",
+              desc: "Link your business number.",
             },
             {
               icon: <Bot className="text-yellow-400 w-6 h-6" />,
               title: "AI Answers Calls",
-              desc: "AI responds instantly like a receptionist.",
+              desc: "Instant receptionist system.",
             },
             {
               icon: <CalendarCheck className="text-yellow-400 w-6 h-6" />,
               title: "Jobs Are Booked",
-              desc: "Appointments are automatically scheduled.",
+              desc: "Automatic scheduling.",
             },
           ].map((step, i) => (
             <div
@@ -191,50 +197,36 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* AI DEMO SECTION */}
+      {/* AI DEMO */}
       <section className="text-center py-24 px-6">
 
         <h2 className="text-3xl font-bold">
           See the <span style={{ color: "#D4AF37" }}>AI in Action</span>
         </h2>
 
-        <p className="text-gray-400 mt-3">
-          Real-time simulation of your AI receptionist handling calls.
-        </p>
-
-        <motion.div
-          animate={{ y: [0, -10, 0] }}
-          transition={{ repeat: Infinity, duration: 3 }}
-          className="mt-12 max-w-xl mx-auto p-6 rounded-2xl bg-white/5 border border-yellow-500/20"
-        >
+        <div className="mt-12 max-w-xl mx-auto p-6 rounded-2xl bg-white/5 border border-yellow-500/20">
 
           <div className="flex items-center gap-3 mb-4">
             <PhoneCall className="text-yellow-400" />
-            <p className="text-sm text-gray-300">Incoming Call...</p>
+            Incoming Call...
           </div>
 
           <div className="flex items-center gap-3 mb-4">
             <Bot className="text-yellow-400" />
-            <p className="text-sm text-gray-300">
-              AI: “Hello! How can I help you today?”
-            </p>
+            AI: “Hello! How can I help you?”
           </div>
 
           <div className="flex items-center gap-3 mb-4">
             <Bot className="text-yellow-400 animate-pulse" />
-            <p className="text-sm text-gray-300">
-              AI is analyzing request...
-            </p>
+            AI is processing request...
           </div>
 
           <div className="flex items-center gap-3">
             <CheckCircle className="text-green-400" />
-            <p className="text-sm text-gray-300">
-              Appointment booked successfully!
-            </p>
+            Appointment booked successfully!
           </div>
 
-        </motion.div>
+        </div>
       </section>
 
       {/* CTA */}
@@ -245,10 +237,11 @@ export default function Landing() {
         </h2>
 
         <p className="text-gray-400 mt-4 max-w-xl mx-auto">
-          Your AI receptionist handles everything while you focus on growing your business.
+          AI handles everything while you focus on growth.
         </p>
 
         <button
+          onClick={() => navigate("/signup")}
           className="mt-8 px-6 py-3 rounded-xl font-semibold"
           style={{
             background: "linear-gradient(135deg,#D4AF37,#f5d76e)",
@@ -258,6 +251,61 @@ export default function Landing() {
           Get Started
         </button>
       </section>
+
+      {/* FOOTER */}
+      <footer className="border-t border-white/10 mt-20 px-6 py-16">
+
+        <div className="max-w-6xl mx-auto grid md:grid-cols-4 gap-10">
+
+          <div>
+            <h2 className="text-xl font-bold">
+              PropertyPulse <span style={{ color: "#D4AF37" }}>AI</span>
+            </h2>
+            <p className="text-gray-400 text-sm mt-3">
+              AI receptionist system for service businesses.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="font-semibold mb-3">Product</h3>
+            <ul className="space-y-2 text-sm text-gray-400">
+              <li>Features</li>
+              <li>How it works</li>
+              <li>AI Demo</li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold mb-3">Company</h3>
+            <ul className="space-y-2 text-sm text-gray-400">
+              <li>About</li>
+              <li>Contact</li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold mb-3">Contact</h3>
+
+            <div className="flex items-center gap-2 text-sm text-gray-400">
+              <Mail size={16} /> support@propertypulse.ai
+            </div>
+
+            <div className="flex items-center gap-2 text-sm text-gray-400 mt-2">
+              <Phone size={16} /> +234 812 979 8526
+            </div>
+
+            <div className="flex items-center gap-2 text-sm text-gray-400 mt-2">
+              <MapPin size={16} /> Global
+            </div>
+          </div>
+
+        </div>
+
+        <div className="text-center text-gray-500 text-sm mt-12 border-t border-white/10 pt-6">
+          © {new Date().getFullYear()} PropertyPulse AI
+        </div>
+
+      </footer>
 
     </div>
   );
