@@ -1,116 +1,132 @@
 import { useState } from "react";
-import { Bot, PhoneCall, CalendarCheck, Users, Activity } from "lucide-react";
+import {
+  PhoneCall,
+  Bot,
+  CalendarCheck,
+  Users,
+  Activity,
+  LayoutDashboard,
+  LogOut,
+} from "lucide-react";
 import { signOut } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-
-  const [calls] = useState([
-    { id: 1, text: "Customer called about plumbing issue", status: "Booked" },
-    { id: 2, text: "Missed call auto-handled by AI", status: "Lead" },
-    { id: 3, text: "New HVAC service request", status: "Booked" },
-  ]);
+  const [activeTab, setActiveTab] = useState("overview");
 
   const logout = async () => {
     await signOut(auth);
     navigate("/login");
   };
 
-  return (
-    <div className="min-h-screen bg-black text-white">
+  const menu = [
+    { name: "Overview", icon: <LayoutDashboard size={18} />, key: "overview" },
+    { name: "Leads", icon: <Users size={18} />, key: "leads" },
+    { name: "Calls", icon: <PhoneCall size={18} />, key: "calls" },
+    { name: "Bookings", icon: <CalendarCheck size={18} />, key: "bookings" },
+    { name: "AI Activity", icon: <Bot size={18} />, key: "ai" },
+  ];
 
-      {/* TOP BAR */}
-      <div className="flex justify-between items-center px-6 py-5 border-b border-white/10">
-        <h1 className="text-xl font-bold">
-          AI <span className="text-yellow-400">Dashboard</span>
+  return (
+    <div className="min-h-screen bg-black text-white flex">
+
+      {/* SIDEBAR */}
+      <div className="w-64 border-r border-white/10 p-5">
+        <h1 className="text-xl font-bold mb-8">
+          PropertyPulse <span className="text-yellow-400">AI</span>
         </h1>
+
+        <div className="space-y-2">
+          {menu.map((item) => (
+            <button
+              key={item.key}
+              onClick={() => setActiveTab(item.key)}
+              className={`flex items-center gap-2 w-full text-left p-2 rounded-lg transition ${
+                activeTab === item.key
+                  ? "bg-yellow-500 text-black"
+                  : "hover:bg-white/10"
+              }`}
+            >
+              {item.icon}
+              {item.name}
+            </button>
+          ))}
+        </div>
 
         <button
           onClick={logout}
-          className="px-4 py-2 rounded-lg bg-red-500 text-white"
+          className="flex items-center gap-2 mt-10 text-red-400"
         >
-          Logout
+          <LogOut size={18} /> Logout
         </button>
       </div>
 
-      {/* STATS */}
-      <div className="grid md:grid-cols-4 gap-4 px-6 py-10">
+      {/* MAIN AREA */}
+      <div className="flex-1 p-6">
 
-        <div className="p-5 rounded-xl bg-white/5 border border-yellow-500/10">
-          <PhoneCall className="text-yellow-400 mb-2" />
-          <h2 className="text-lg font-bold">24 Calls</h2>
-          <p className="text-gray-400 text-sm">Handled today</p>
-        </div>
+        {/* TOP BAR */}
+        <div className="flex justify-between items-center border-b border-white/10 pb-4 mb-6">
+          <h2 className="text-xl font-semibold capitalize">
+            {activeTab}
+          </h2>
 
-        <div className="p-5 rounded-xl bg-white/5 border border-yellow-500/10">
-          <Bot className="text-yellow-400 mb-2" />
-          <h2 className="text-lg font-bold">AI Active</h2>
-          <p className="text-gray-400 text-sm">System running 24/7</p>
-        </div>
-
-        <div className="p-5 rounded-xl bg-white/5 border border-yellow-500/10">
-          <CalendarCheck className="text-yellow-400 mb-2" />
-          <h2 className="text-lg font-bold">12 Bookings</h2>
-          <p className="text-gray-400 text-sm">Appointments scheduled</p>
-        </div>
-
-        <div className="p-5 rounded-xl bg-white/5 border border-yellow-500/10">
-          <Users className="text-yellow-400 mb-2" />
-          <h2 className="text-lg font-bold">18 Leads</h2>
-          <p className="text-gray-400 text-sm">Captured automatically</p>
-        </div>
-
-      </div>
-
-      {/* MAIN SECTION */}
-      <div className="px-6 grid md:grid-cols-2 gap-6">
-
-        {/* ACTIVITY FEED */}
-        <div className="p-6 rounded-xl bg-white/5 border border-yellow-500/10">
-          <div className="flex items-center gap-2 mb-4">
-            <Activity className="text-yellow-400" />
-            <h2 className="font-bold">AI Activity Feed</h2>
+          <div className="text-sm text-gray-400">
+            AI Reception Dashboard
           </div>
+        </div>
 
-          <div className="space-y-3">
-            {calls.map((call) => (
-              <div
-                key={call.id}
-                className="p-3 bg-black/40 border border-white/10 rounded-lg"
-              >
-                <p className="text-sm">{call.text}</p>
-                <span className="text-xs text-yellow-400">
-                  {call.status}
-                </span>
+        {/* OVERVIEW */}
+        {activeTab === "overview" && (
+          <>
+            <div className="grid md:grid-cols-4 gap-4">
+
+              <div className="p-4 bg-white/5 rounded-xl border border-yellow-500/10">
+                <PhoneCall className="text-yellow-400 mb-2" />
+                <p className="text-2xl font-bold">24</p>
+                <p className="text-gray-400 text-sm">Calls Today</p>
               </div>
-            ))}
+
+              <div className="p-4 bg-white/5 rounded-xl border border-yellow-500/10">
+                <Users className="text-yellow-400 mb-2" />
+                <p className="text-2xl font-bold">18</p>
+                <p className="text-gray-400 text-sm">Leads Captured</p>
+              </div>
+
+              <div className="p-4 bg-white/5 rounded-xl border border-yellow-500/10">
+                <CalendarCheck className="text-yellow-400 mb-2" />
+                <p className="text-2xl font-bold">12</p>
+                <p className="text-gray-400 text-sm">Bookings</p>
+              </div>
+
+              <div className="p-4 bg-white/5 rounded-xl border border-yellow-500/10">
+                <Bot className="text-yellow-400 mb-2" />
+                <p className="text-2xl font-bold text-green-400">Online</p>
+                <p className="text-gray-400 text-sm">AI Status</p>
+              </div>
+
+            </div>
+
+            <div className="mt-8 p-5 bg-white/5 rounded-xl border border-yellow-500/10">
+              <div className="flex items-center gap-2 mb-4">
+                <Activity className="text-yellow-400" />
+                <h3 className="font-semibold">Live Activity</h3>
+              </div>
+
+              <p className="text-gray-400 text-sm">
+                AI is actively answering calls and capturing leads in real time...
+              </p>
+            </div>
+          </>
+        )}
+
+        {/* PLACEHOLDERS */}
+        {activeTab !== "overview" && (
+          <div className="p-10 text-center text-gray-500">
+            {activeTab.toUpperCase()} section coming next...
           </div>
-        </div>
-
-        {/* RIGHT PANEL */}
-        <div className="p-6 rounded-xl bg-white/5 border border-yellow-500/10">
-
-          <div className="flex items-center gap-2 mb-4">
-            <Bot className="text-yellow-400" />
-            <h2 className="font-bold">AI Status</h2>
-          </div>
-
-          <div className="p-4 bg-black/40 rounded-lg border border-white/10">
-            <p className="text-green-400 font-semibold">
-              ● System Online
-            </p>
-            <p className="text-gray-400 text-sm mt-2">
-              AI is actively answering calls, capturing leads and booking jobs automatically.
-            </p>
-          </div>
-
-          <button className="mt-6 w-full py-3 rounded-lg bg-yellow-400 text-black font-semibold">
-            View Full Analytics
-          </button>
-
-        </div>
+        )}
 
       </div>
     </div>
