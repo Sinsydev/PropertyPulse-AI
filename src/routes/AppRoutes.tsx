@@ -3,6 +3,7 @@ import Landing from "../pages/Landing";
 import Login from "../pages/Login";
 import Signup from "../pages/Signup"
 import Dashboard from "../pages/Dashboard";
+import Onboarding from "../pages/Onboarding";
 
 export default function AppRoutes() {
   return (
@@ -12,6 +13,7 @@ export default function AppRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/onboarding" element={<Onboarding />} />
       </Routes>
     </BrowserRouter>
   );

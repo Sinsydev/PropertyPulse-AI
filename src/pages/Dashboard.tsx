@@ -10,9 +10,9 @@ import {
 import { signOut } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import { useNavigate } from "react-router-dom";
-
 import { getLeads, createLead } from "../services/leadService";
 import type { Lead } from "../services/leadService";
+import { getBusinessByUser } from "../services/businessService";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -90,14 +90,32 @@ export default function Dashboard() {
      LOAD LEADS
   ========================= */
   useEffect(() => {
-    const load = async () => {
-      const data = await getLeads();
-      setLeads(data);
-      setLoading(false);
-    };
+  const checkBusiness = async () => {
+    try {
+      const user = auth.currentUser;
 
-    load();
-  }, []);
+      if (!user) return;
+
+      const business = await getBusinessByUser(user.uid);
+
+      // 🚨 IF NO BUSINESS → REDIRECT
+      if (!business) {
+        navigate("/onboarding");
+        return;
+      }
+
+      // ✅ IF BUSINESS EXISTS → LOAD DATA
+      const leadsData = await getLeads();
+      setLeads(leadsData);
+
+      setLoading(false);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  checkBusiness();
+}, []);
 
   /* =========================
      FORM HANDLER
