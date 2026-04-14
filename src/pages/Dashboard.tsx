@@ -7,13 +7,13 @@ import {
   LayoutDashboard,
   LogOut,
 } from "lucide-react";
+import { askAI } from "../services/smartAI";
 import { signOut } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import { useNavigate } from "react-router-dom";
 import { getLeads, createLead } from "../services/leadService";
 import type { Lead } from "../services/leadService";
 import { getBusinessByUser } from "../services/businessService";
-import { handleAI } from "../services/aiService";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -43,42 +43,54 @@ export default function Dashboard() {
   const [input, setInput] = useState<string>("");
 
   const sendMessage = async () => {
-    if (!input) return;
+  if (!input) return;
 
-    const userMsg = input;
+  const userMsg = input;
+
+  setAiMessages((prev) => [
+    ...prev,
+    { type: "user", text: userMsg },
+  ]);
+
+  setInput("");
+
+  try {
+    const ai = await askAI(userMsg);
+
+    const reply = ai.reply;
 
     setAiMessages((prev) => [
       ...prev,
-      { type: "user", text: userMsg },
+      { type: "ai", text: reply },
     ]);
 
-    setInput("");
+    try {
+      const data = JSON.parse(reply);
 
-    const response = handleAI(userMsg);
+      if (data.name && data.phone && data.service) {
+        await createLead({
+          name: String(data.name),
+          phone: String(data.phone),
+          service: String(data.service),
+          status: "new",
+          businessId: businessId,
+        });
 
-    if (typeof response === "string") {
-      setAiMessages((prev) => [
-        ...prev,
-        { type: "ai", text: response },
-      ]);
-    } else {
-      setAiMessages((prev) => [
-        ...prev,
-        { type: "ai", text: response.text },
-      ]);
-
-      if (!businessId) return;
-
-      await createLead({
-        ...response.lead,
-        businessId: businessId,
-      });
-
-      const updated = await getLeads(businessId);
-      setLeads(updated);
+        const updated = await getLeads(businessId);
+        setLeads(updated);
+      }
+    } catch {
+      // ignore if not JSON
     }
-  };
+  } catch (err) {
+    console.error(err);
 
+    setAiMessages((prev) => [
+      ...prev,
+      { type: "system", text: "⚠️ AI server error" },
+    ]);
+  }
+};
   /* =========================
      AUTH
   ========================= */
