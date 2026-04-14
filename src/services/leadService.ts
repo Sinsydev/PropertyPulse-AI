@@ -7,20 +7,30 @@ export type Lead = {
   phone: string;
   service: string;
   status: string;
+  businessId: string;
 };
 
-export const getLeads = async (): Promise<Lead[]> => {
-  const snapshot = await getDocs(collection(db, "leads"));
+import {
+  query,
+  where,
+} from "firebase/firestore";
+
+export const getLeads = async (
+  businessId: string
+): Promise<Lead[]> => {
+  const q = query(
+    collection(db, "leads"),
+    where("businessId", "==", businessId)
+  );
+
+  const snapshot = await getDocs(q);
 
   return snapshot.docs.map((doc) => {
-    const data = doc.data() as Partial<Lead>;
+    const data = doc.data() as Omit<Lead, "id">;
 
     return {
       id: doc.id,
-      name: data.name ?? "",
-      phone: data.phone ?? "",
-      service: data.service ?? "",
-      status: data.status ?? "",
+      ...data,
     };
   });
 };

@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import Herobg from "../assets/Herobg.webp";
+import ai from "../assets/ai.webp";
 
 import {
   Mail,
@@ -11,8 +12,6 @@ import {
   Droplets,
   Sparkles,
   Radar,
-  CheckCircle,
-  PhoneCall,
   Phone,
 } from "lucide-react";
 
@@ -198,36 +197,30 @@ export default function Landing() {
       </section>
 
       {/* AI DEMO */}
-      <section className="text-center py-24 px-6">
+<section className="text-center py-24 px-6">
 
-        <h2 className="text-3xl font-bold">
-          See the <span style={{ color: "#D4AF37" }}>AI in Action</span>
-        </h2>
+  <h2 className="text-3xl font-bold">
+    See the <span style={{ color: "#D4AF37" }}>AI in Action</span>
+  </h2>
+  <br /><br />
 
-        <div className="mt-12 max-w-xl mx-auto p-6 rounded-2xl bg-white/5 border border-yellow-500/20">
+  <motion.div
+    animate={{ y: [0, -12, 0] }}
+    transition={{ repeat: Infinity, duration: 3 }}
+    className="flex-1 flex justify-center"
+  >
+    <div className="relative w-full">
+      <div className="absolute inset-0 bg-yellow-500/10 blur-3xl rounded-full"></div>
 
-          <div className="flex items-center gap-3 mb-4">
-            <PhoneCall className="text-yellow-400" />
-            Incoming Call...
-          </div>
+      <img
+        src={ai}
+        alt="AI Assistant"
+        className="w-full max-w-[1000px] relative z-10 drop-shadow-2xl mx-auto"
+      />
+    </div>
+  </motion.div>
+</section>
 
-          <div className="flex items-center gap-3 mb-4">
-            <Bot className="text-yellow-400" />
-            AI: “Hello! How can I help you?”
-          </div>
-
-          <div className="flex items-center gap-3 mb-4">
-            <Bot className="text-yellow-400 animate-pulse" />
-            AI is processing request...
-          </div>
-
-          <div className="flex items-center gap-3">
-            <CheckCircle className="text-green-400" />
-            Appointment booked successfully!
-          </div>
-
-        </div>
-      </section>
 
       {/* CTA */}
       <section className="text-center py-28 px-6">

@@ -7,9 +7,6 @@ import {
   where,
 } from "firebase/firestore";
 
-/* =========================
-   BUSINESS TYPE
-========================= */
 export type Business = {
   id: string;
   userId: string;
@@ -18,9 +15,6 @@ export type Business = {
   service: string;
 };
 
-/* =========================
-   CREATE BUSINESS
-========================= */
 export const createBusiness = async (
   data: Omit<Business, "id">
 ) => {
@@ -30,9 +24,6 @@ export const createBusiness = async (
   });
 };
 
-/* =========================
-   GET BUSINESS BY USER
-========================= */
 export const getBusinessByUser = async (
   userId: string
 ): Promise<Business | null> => {

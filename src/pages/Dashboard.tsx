@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { getLeads, createLead } from "../services/leadService";
 import type { Lead } from "../services/leadService";
 import { getBusinessByUser } from "../services/businessService";
+import { handleAI } from "../services/aiService";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -22,49 +23,60 @@ export default function Dashboard() {
   const [loading, setLoading] = useState<boolean>(true);
 
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [businessId, setBusinessId] = useState<string>("");
 
   const [form, setForm] = useState<Omit<Lead, "id">>({
     name: "",
     phone: "",
     service: "",
+    businessId: "",
     status: "new",
   });
 
   /* =========================
-     AI FLOW STATE
+     AI CHAT STATE
   ========================= */
   const [aiMessages, setAiMessages] = useState<
     { type: "user" | "ai" | "system"; text: string }[]
-  >([
-    { type: "system", text: "AI Reception System Online..." },
-  ]);
+  >([{ type: "system", text: "AI Receptionist Online..." }]);
 
-  const simulateCall = () => {
+  const [input, setInput] = useState<string>("");
+
+  const sendMessage = async () => {
+    if (!input) return;
+
+    const userMsg = input;
+
     setAiMessages((prev) => [
       ...prev,
-      { type: "user", text: "📞 Incoming Call from Client..." },
+      { type: "user", text: userMsg },
     ]);
 
-    setTimeout(() => {
-      setAiMessages((prev) => [
-        ...prev,
-        { type: "ai", text: "Hello! Welcome to PropertyPulse AI. How can I help you?" },
-      ]);
-    }, 1500);
+    setInput("");
 
-    setTimeout(() => {
-      setAiMessages((prev) => [
-        ...prev,
-        { type: "ai", text: "Analyzing request..." },
-      ]);
-    }, 3000);
+    const response = handleAI(userMsg);
 
-    setTimeout(() => {
+    if (typeof response === "string") {
       setAiMessages((prev) => [
         ...prev,
-        { type: "system", text: "📅 Appointment automatically booked!" },
+        { type: "ai", text: response },
       ]);
-    }, 5000);
+    } else {
+      setAiMessages((prev) => [
+        ...prev,
+        { type: "ai", text: response.text },
+      ]);
+
+      if (!businessId) return;
+
+      await createLead({
+        ...response.lead,
+        businessId: businessId,
+      });
+
+      const updated = await getLeads(businessId);
+      setLeads(updated);
+    }
   };
 
   /* =========================
@@ -87,35 +99,34 @@ export default function Dashboard() {
   ];
 
   /* =========================
-     LOAD LEADS
+     LOAD DATA
   ========================= */
   useEffect(() => {
-  const checkBusiness = async () => {
-    try {
-      const user = auth.currentUser;
+    const loadData = async () => {
+      try {
+        const user = auth.currentUser;
+        if (!user) return;
 
-      if (!user) return;
+        const business = await getBusinessByUser(user.uid);
 
-      const business = await getBusinessByUser(user.uid);
+        if (!business) {
+          navigate("/onboarding");
+          return;
+        }
 
-      // 🚨 IF NO BUSINESS → REDIRECT
-      if (!business) {
-        navigate("/onboarding");
-        return;
+        setBusinessId(business.id);
+
+        const leadsData = await getLeads(business.id);
+        setLeads(leadsData);
+
+        setLoading(false);
+      } catch (err) {
+        console.error(err);
       }
+    };
 
-      // ✅ IF BUSINESS EXISTS → LOAD DATA
-      const leadsData = await getLeads();
-      setLeads(leadsData);
-
-      setLoading(false);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  checkBusiness();
-}, []);
+    loadData();
+  }, []);
 
   /* =========================
      FORM HANDLER
@@ -127,24 +138,29 @@ export default function Dashboard() {
   };
 
   const handleSubmit = async () => {
-    await createLead(form);
+    if (!businessId) return;
+
+    await createLead({
+      ...form,
+      businessId: businessId,
+    });
 
     setForm({
       name: "",
       phone: "",
       service: "",
       status: "new",
+      businessId: "",
     });
 
     setShowModal(false);
 
-    const updated = await getLeads();
+    const updated = await getLeads(businessId);
     setLeads(updated);
   };
 
   return (
     <div className="min-h-screen bg-black text-white flex">
-
       {/* SIDEBAR */}
       <div className="w-64 border-r border-white/10 p-5">
         <h1 className="text-xl font-bold mb-8">
@@ -156,7 +172,7 @@ export default function Dashboard() {
             <button
               key={item.key}
               onClick={() => setActiveTab(item.key)}
-              className={`flex items-center gap-2 w-full text-left p-2 rounded-lg ${
+              className={`flex items-center gap-2 w-full p-2 rounded-lg ${
                 activeTab === item.key
                   ? "bg-yellow-500 text-black"
                   : "hover:bg-white/10"
@@ -178,10 +194,8 @@ export default function Dashboard() {
 
       {/* MAIN */}
       <div className="flex-1 p-6">
-
         {/* TOP BAR */}
         <div className="flex justify-between items-center border-b border-white/10 pb-4 mb-6">
-
           <h2 className="text-xl font-semibold capitalize">
             {activeTab}
           </h2>
@@ -194,23 +208,12 @@ export default function Dashboard() {
               + Add Lead
             </button>
           )}
-
-          {activeTab === "overview" && (
-            <button
-              onClick={simulateCall}
-              className="px-4 py-2 bg-yellow-500 text-black rounded-lg"
-            >
-              Simulate Call
-            </button>
-          )}
-
         </div>
 
         {/* OVERVIEW */}
         {activeTab === "overview" && (
           <>
             <div className="grid md:grid-cols-4 gap-4">
-
               <div className="p-4 bg-white/5 rounded-xl">
                 <PhoneCall className="text-yellow-400 mb-2" />
                 <p className="text-2xl font-bold">24</p>
@@ -234,34 +237,45 @@ export default function Dashboard() {
                 <p className="text-2xl font-bold">Online</p>
                 <p className="text-gray-400 text-sm">AI</p>
               </div>
-
             </div>
 
-            {/* AI LIVE FLOW */}
-            <div className="mt-8 p-5 bg-white/5 border border-white/10 rounded-xl h-[300px] overflow-y-auto">
-
+            {/* AI CHAT */}
+            <div className="mt-8 p-5 bg-white/5 border border-white/10 rounded-xl h-[350px] flex flex-col">
               <h3 className="font-semibold mb-4 text-yellow-400">
-                AI Live Simulation
+                AI Reception Chat
               </h3>
 
-              <div className="space-y-3">
+              <div className="flex-1 overflow-y-auto space-y-2">
                 {aiMessages.map((msg, i) => (
-                  <div key={i} className="text-sm">
-                    {msg.type === "user" && (
-                      <p className="text-blue-400">{msg.text}</p>
-                    )}
-
-                    {msg.type === "ai" && (
-                      <p className="text-gray-300">🤖 {msg.text}</p>
-                    )}
-
-                    {msg.type === "system" && (
-                      <p className="text-green-400">{msg.text}</p>
-                    )}
-                  </div>
+                  <p
+                    key={i}
+                    className={`text-sm ${
+                      msg.type === "user"
+                        ? "text-blue-400"
+                        : msg.type === "ai"
+                        ? "text-gray-300"
+                        : "text-green-400"
+                    }`}
+                  >
+                    {msg.text}
+                  </p>
                 ))}
               </div>
 
+              <div className="mt-3 flex gap-2">
+                <input
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Type like a customer..."
+                  className="flex-1 p-2 bg-white/5 rounded"
+                />
+                <button
+                  onClick={sendMessage}
+                  className="bg-yellow-500 px-4 rounded text-black"
+                >
+                  Send
+                </button>
+              </div>
             </div>
           </>
         )}
@@ -291,30 +305,29 @@ export default function Dashboard() {
         {showModal && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center">
             <div className="bg-black border border-white/10 p-6 rounded-xl w-[350px]">
-
               <h2 className="text-lg font-bold mb-4">Add Lead</h2>
 
               <input
                 name="name"
-                placeholder="Name"
                 value={form.name}
                 onChange={handleChange}
+                placeholder="Name"
                 className="w-full p-2 mb-2 bg-white/5 rounded"
               />
 
               <input
                 name="phone"
-                placeholder="Phone"
                 value={form.phone}
                 onChange={handleChange}
+                placeholder="Phone"
                 className="w-full p-2 mb-2 bg-white/5 rounded"
               />
 
               <input
                 name="service"
-                placeholder="Service"
                 value={form.service}
                 onChange={handleChange}
+                placeholder="Service"
                 className="w-full p-2 mb-2 bg-white/5 rounded"
               />
 
@@ -344,11 +357,9 @@ export default function Dashboard() {
                   Cancel
                 </button>
               </div>
-
             </div>
           </div>
         )}
-
       </div>
     </div>
   );
