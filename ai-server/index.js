@@ -1,43 +1,83 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import OpenAI from "openai";
 
 dotenv.config();
 
 const app = express();
+
+// ✅ middleware
 app.use(cors());
 app.use(express.json());
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+// ✅ health check
+app.get("/", (req, res) => {
+  res.send("AI Server is running 🚀");
 });
 
+// ✅ CHAT ROUTE (FREE AI)
 app.post("/chat", async (req, res) => {
-  const { message } = req.body;
+  console.log("📩 Incoming request:", req.body);
 
   try {
-    const response = await client.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are a professional AI receptionist. Collect name, phone, and service. When done, return JSON: {name, phone, service}",
-        },
-        {
-          role: "user",
-          content: message,
-        },
-      ],
-    });
+    const { message } = req.body;
 
-    const text = response.choices[0].message.content;
+    if (!message) {
+      return res.status(400).json({ error: "Message is required" });
+    }
 
-    res.json({ reply: text });
+    const text = message.toLowerCase();
+
+    let name = "";
+    let phone = "";
+    let service = "";
+
+    // ✅ NAME DETECTION
+    if (text.includes("name is")) {
+      const parts = message.split("name is")[1]?.trim().split(" ");
+      name = parts ? parts[0] : "";
+    }
+
+    // ✅ PHONE DETECTION
+    const phoneMatch = message.match(/\d{7,}/);
+    if (phoneMatch) phone = phoneMatch[0];
+
+    // ✅ SERVICE DETECTION
+    if (text.includes("plumbing")) service = "plumbing";
+    else if (text.includes("cleaning")) service = "cleaning";
+    else if (text.includes("real estate")) service = "real estate";
+
+    let reply = "Hello! How can I assist you today?";
+
+    if (name || phone || service) {
+      reply = `Got it 👍 ${
+        name ? "Name: " + name + ", " : ""
+      }${phone ? "Phone: " + phone + ", " : ""}${
+        service ? "Service: " + service : ""
+      }`;
+
+      // ✅ IF ALL DATA → SEND JSON (IMPORTANT)
+      if (name && phone && service) {
+        console.log("✅ Lead Captured:", { name, phone, service });
+
+        return res.json({
+          reply: JSON.stringify({
+            name,
+            phone,
+            service,
+          }),
+        });
+      }
+    }
+
+    res.json({ reply });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("❌ ERROR:", err);
+    res.status(500).json({ error: "AI failed" });
   }
 });
 
-app.listen(5001, () => console.log("AI Server running on 5001"));
+// ✅ start server
+app.listen(5001, () => {
+  console.log("🚀 AI Server running on http://localhost:5001");
+});
