@@ -129,8 +129,7 @@ export default function Dashboard() {
         setBusinessId(business.id);
 
         const leadsData = await getLeads(business.id);
-        setLeads(leadsData);
-
+        setLeads(leadsData); 
         setLoading(false);
       } catch (err) {
         console.error(err);
@@ -138,7 +137,7 @@ export default function Dashboard() {
     };
 
     loadData();
-  }, []);
+  }, [navigate]);
 
   /* =========================
      FORM HANDLER
@@ -252,7 +251,7 @@ export default function Dashboard() {
             </div>
 
             {/* AI CHAT */}
-            <div className="mt-8 p-5 bg-white/5 border border-white/10 rounded-xl h-[350px] flex flex-col">
+            <div className="mt-8 p-5 bg-white/5 border border-white/10 rounded-xl h-87.5 flex flex-col">
               <h3 className="font-semibold mb-4 text-yellow-400">
                 AI Reception Chat
               </h3>
@@ -316,7 +315,7 @@ export default function Dashboard() {
         {/* MODAL */}
         {showModal && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center">
-            <div className="bg-black border border-white/10 p-6 rounded-xl w-[350px]">
+            <div className="bg-black border border-white/10 p-6 rounded-xl w-87.5">
               <h2 className="text-lg font-bold mb-4">Add Lead</h2>
 
               <input

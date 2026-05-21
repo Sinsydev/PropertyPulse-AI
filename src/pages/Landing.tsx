@@ -60,7 +60,8 @@ export default function Landing() {
             Turn Missed Calls into{" "}
             <span style={{ color: "#D4AF37" }}>
               Booked Jobs Automatically
-            </span>
+            </span> 
+            
           </motion.h1>
 
           <p className="text-gray-400 mt-6 max-w-xl text-lg">
@@ -98,7 +99,7 @@ export default function Landing() {
             <img
               src={Herobg}
               alt="AI Assistant"
-              className="w-[340px] md:w-[420px] relative z-10 drop-shadow-2xl"
+              className="w-85 md:w-105 relative z-10 drop-shadow-2xl"
             />
           </div>
         </motion.div>
@@ -204,21 +205,21 @@ export default function Landing() {
   </h2>
   <br /><br />
 
-  <motion.div
-    animate={{ y: [0, -12, 0] }}
-    transition={{ repeat: Infinity, duration: 3 }}
-    className="flex-1 flex justify-center"
-  >
-    <div className="relative w-full">
-      <div className="absolute inset-0 bg-yellow-500/10 blur-3xl rounded-full"></div>
+      <motion.div
+        animate={{ y: [0, -12, 0] }}
+        transition={{ repeat: Infinity, duration: 3 }}
+        className="flex-1 flex justify-center"
+      >
+        <div className="relative w-full">
+          <div className="absolute inset-0 bg-yellow-500/10 blur-3xl rounded-full"></div>
 
-      <img
-        src={ai}
-        alt="AI Assistant"
-        className="w-full max-w-[1000px] relative z-10 drop-shadow-2xl mx-auto"
-      />
-    </div>
-  </motion.div>
+          <img
+            src={ai}
+            alt="AI Assistant"
+            className="w-full max-w-250 relative z-10 drop-shadow-2xl mx-auto"
+          />
+        </div>
+      </motion.div>
 </section>
 
 
