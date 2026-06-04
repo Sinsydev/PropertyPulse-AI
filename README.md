@@ -119,7 +119,7 @@ Custom AI solutions
 Ismail Aminu Said
 📧 Ismailaminusaid1234@gmail.com
 
-🌍 (https://sinsydev.github.io/my-portfolio/)
+ 
 
 ⭐ Support
 
