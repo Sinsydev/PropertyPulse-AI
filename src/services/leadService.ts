@@ -1,42 +1,33 @@
 import { db } from "../lib/firebase";
-import { collection, getDocs, addDoc } from "firebase/firestore";
+import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
+import type { LeadRecord } from "../types/business";
 
-export type Lead = {
-  id: string;
-  name: string;
-  phone: string;
-  service: string;
-  status: string;
-  businessId: string;
-};
-
-import {
-  query,
-  where,
-} from "firebase/firestore";
+const LEADS_COLLECTION = "leads";
 
 export const getLeads = async (
   businessId: string
-): Promise<Lead[]> => {
+): Promise<LeadRecord[]> => {
   const q = query(
-    collection(db, "leads"),
+    collection(db, LEADS_COLLECTION),
     where("businessId", "==", businessId)
   );
 
   const snapshot = await getDocs(q);
 
-  return snapshot.docs.map((doc) => {
-    const data = doc.data() as Omit<Lead, "id">;
+  return snapshot.docs.map((document) => {
+    const data = document.data() as Omit<LeadRecord, "id">;
 
     return {
-      id: doc.id,
+      id: document.id,
       ...data,
     };
   });
 };
 
-export const createLead = async (lead: Omit<Lead, "id">) => {
-  await addDoc(collection(db, "leads"), {
+export const createLead = async (
+  lead: Omit<LeadRecord, "id" | "createdAt">
+): Promise<void> => {
+  await addDoc(collection(db, LEADS_COLLECTION), {
     ...lead,
     createdAt: new Date(),
   });

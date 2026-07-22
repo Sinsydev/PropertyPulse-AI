@@ -1,24 +1,19 @@
 import { db } from "../lib/firebase";
 import {
-  collection,
   addDoc,
+  collection,
   getDocs,
   query,
   where,
 } from "firebase/firestore";
+import type { BusinessRecord } from "../types/business";
 
-export type Business = {
-  id: string;
-  userId: string;
-  businessName: string;
-  phone: string;
-  service: string;
-};
+const BUSINESSES_COLLECTION = "businesses";
 
 export const createBusiness = async (
-  data: Omit<Business, "id">
-) => {
-  await addDoc(collection(db, "businesses"), {
+  data: Omit<BusinessRecord, "id" | "createdAt">
+): Promise<void> => {
+  await addDoc(collection(db, BUSINESSES_COLLECTION), {
     ...data,
     createdAt: new Date(),
   });
@@ -26,9 +21,9 @@ export const createBusiness = async (
 
 export const getBusinessByUser = async (
   userId: string
-): Promise<Business | null> => {
+): Promise<BusinessRecord | null> => {
   const q = query(
-    collection(db, "businesses"),
+    collection(db, BUSINESSES_COLLECTION),
     where("userId", "==", userId)
   );
 
@@ -36,11 +31,11 @@ export const getBusinessByUser = async (
 
   if (snapshot.empty) return null;
 
-  const doc = snapshot.docs[0];
-  const data = doc.data() as Omit<Business, "id">;
+  const document = snapshot.docs[0];
+  const data = document.data() as Omit<BusinessRecord, "id">;
 
   return {
-    id: doc.id,
+    id: document.id,
     ...data,
   };
 };
