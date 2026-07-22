@@ -1,11 +1,11 @@
- 🏡 PropertyPulse AI
+🏡 PropertyPulse AI
 The Future of Real Estate Automation
 
 Turn every property inquiry into a qualified lead — automatically.
 
 🚀 Live Demo
 
-👉  It's Under developing
+👉 It's Under developing
 
 🎯 What is PropertyPulse AI?
 
@@ -119,8 +119,7 @@ Custom AI solutions
 Ismail Aminu Said
 📧 Ismailaminusaid1234@gmail.com
 
- 
-
 ⭐ Support
 
 If this project impressed you, give it a ⭐ on GitHub.
+git push origin main
