@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { getLeads, createLead } from "../services/leadService";
 import type { Lead } from "../services/leadService";
 import { getBusinessByUser } from "../services/businessService";
+import { routes } from "../routes/routes";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -96,7 +97,7 @@ export default function Dashboard() {
   ========================= */
   const logout = async () => {
     await signOut(auth);
-    navigate("/login");
+    navigate(routes.login);
   };
 
   /* =========================
@@ -122,7 +123,7 @@ export default function Dashboard() {
         const business = await getBusinessByUser(user.uid);
 
         if (!business) {
-          navigate("/onboarding");
+          navigate(routes.onboarding);
           return;
         }
 

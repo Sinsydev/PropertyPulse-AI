@@ -2,6 +2,8 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import Herobg from "../assets/Herobg.webp";
 import ai from "../assets/ai.webp";
+import Button from "../components/Button";
+import { routes } from "../routes/routes";
 
 import {
   Mail,
@@ -29,21 +31,15 @@ export default function Landing() {
 
         <div className="flex gap-4 items-center">
           <button
-            onClick={() => navigate("/login")}
+            onClick={() => navigate(routes.login)}
             className="text-sm text-gray-300 hover:text-white"
           >
             Sign In
           </button>
 
-          <button
-            onClick={() => navigate("/signup")}
-            className="px-4 py-2 rounded-lg text-black font-semibold"
-            style={{
-              background: "linear-gradient(135deg,#D4AF37,#f5d76e)",
-            }}
-          >
+          <Button onClick={() => navigate(routes.signup)} variant="primary">
             Get Started
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -70,16 +66,9 @@ export default function Landing() {
           </p>
 
           <div className="mt-6 flex items-center gap-4">
-            <button
-              onClick={() => navigate("/signup")}
-              className="px-6 py-3 rounded-xl font-semibold"
-              style={{
-                background: "linear-gradient(135deg,#D4AF37,#f5d76e)",
-                color: "black",
-              }}
-            >
+            <Button onClick={() => navigate(routes.signup)} variant="primary">
               See How It Works
-            </button>
+            </Button>
 
             <span className="text-sm text-gray-500">
               Takes less than 10 minutes
@@ -234,16 +223,9 @@ export default function Landing() {
           AI handles everything while you focus on growth.
         </p>
 
-        <button
-          onClick={() => navigate("/signup")}
-          className="mt-8 px-6 py-3 rounded-xl font-semibold"
-          style={{
-            background: "linear-gradient(135deg,#D4AF37,#f5d76e)",
-            color: "black",
-          }}
-        >
+        <Button onClick={() => navigate(routes.signup)} variant="primary" className="mt-8">
           Get Started
-        </button>
+        </Button>
       </section>
 
       {/* FOOTER */}

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { auth } from "../lib/firebase";
 import { createBusiness } from "../services/businessService";
 import { useNavigate } from "react-router-dom";
+import { routes } from "../routes/routes";
 
 export default function Onboarding() {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ export default function Onboarding() {
         service,
       });
 
-      navigate("/dashboard");
+      navigate(routes.dashboard);
     } catch (err) {
       console.error(err);
       alert("Error saving business");
