@@ -1,38 +1,52 @@
- import {
+import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
+  type UserCredential,
 } from "firebase/auth";
-
-import { auth, db } from "../lib/firebase";
 import { doc, setDoc } from "firebase/firestore";
+import { auth, db } from "../lib/firebase";
+import type { AuthUserProfile, SignupResult } from "../types/auth";
 
-// 🔐 SIGN UP + CREATE USER IN DB
-export const signup = async (email: string, password: string) => {
-  const userCredential = await createUserWithEmailAndPassword(
+const USERS_COLLECTION = "users";
+
+async function createUserProfile(
+  userId: string,
+  email: string | null
+): Promise<void> {
+  const profile: AuthUserProfile = {
+    email,
+    createdAt: new Date(),
+    businessId: null,
+  };
+
+  await setDoc(doc(db, USERS_COLLECTION, userId), profile);
+}
+
+export const signup = async (
+  email: string,
+  password: string
+): Promise<SignupResult> => {
+  const userCredential: UserCredential = await createUserWithEmailAndPassword(
     auth,
     email,
     password
   );
 
-  const user = userCredential.user;
+  const { user } = userCredential;
 
-  // 🧠 store user in Firestore
-  await setDoc(doc(db, "users", user.uid), {
+  await createUserProfile(user.uid, user.email);
+
+  return {
+    uid: user.uid,
     email: user.email,
-    createdAt: new Date(),
-    businessId: null,
-  });
-
-  return userCredential;
+  };
 };
 
-// 🔑 LOGIN
 export const login = (email: string, password: string) => {
   return signInWithEmailAndPassword(auth, email, password);
 };
 
-// 🚪 LOGOUT
 export const logout = () => {
   return signOut(auth);
 };

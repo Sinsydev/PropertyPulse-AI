@@ -24,6 +24,20 @@
 </p>
 
 ---
+
+## ⚙️ Environment Setup
+
+Create a local environment file before running the app:
+
+```bash
+cp .env.example .env.local
+```
+
+Fill in your Firebase values in [.env.local](.env.local) using the template in [.env.example](.env.example).
+
+This project now validates required environment variables at startup so missing configuration fails fast instead of breaking later in the app.
+
+---
  
  ## 🚀 Overview
 
