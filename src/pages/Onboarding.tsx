@@ -10,16 +10,18 @@ export default function Onboarding() {
   const [businessName, setBusinessName] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
   const [service, setService] = useState<string>("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async () => {
     try {
       const user = auth.currentUser;
 
       if (!user) {
-        alert("User not logged in");
+        setError("User not logged in");
         return;
       }
 
+      setError("");
       await createBusiness({
         userId: user.uid,
         businessName,
@@ -30,7 +32,7 @@ export default function Onboarding() {
       navigate(routes.dashboard);
     } catch (err) {
       console.error(err);
-      alert("Error saving business");
+      setError("Error saving business");
     }
   };
 
@@ -62,6 +64,10 @@ export default function Onboarding() {
           onChange={(e) => setService(e.target.value)}
           className="w-full p-2 mb-4 bg-black border border-gray-700 rounded"
         />
+
+        {error ? (
+          <p className="mb-3 text-sm text-red-400">{error}</p>
+        ) : null}
 
         <button
           onClick={handleSubmit}
