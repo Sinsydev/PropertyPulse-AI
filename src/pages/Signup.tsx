@@ -7,17 +7,19 @@ import { routes } from "../routes/routes";
 export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSignup = async () => {
     try {
+      setError("");
       await createUserWithEmailAndPassword(auth, email, password);
       navigate(routes.dashboard);
     } catch (err) {
       if (err instanceof Error) {
-        alert(err.message);
+        setError(err.message);
       } else {
-        alert("Something went wrong");
+        setError("Something went wrong");
       }
     }
   };
@@ -40,6 +42,10 @@ export default function Signup() {
           className="w-full p-2 mb-3 bg-black border border-gray-700 rounded"
           onChange={(e) => setPassword(e.target.value)}
         />
+
+        {error ? (
+          <p className="mb-3 text-sm text-red-400">{error}</p>
+        ) : null}
 
         <button
           onClick={handleSignup}
