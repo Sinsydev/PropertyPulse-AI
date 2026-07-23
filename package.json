@@ -1,14 +1,19 @@
-{
+ {
   "name": "propertypulse-ai",
   "private": true,
   "version": "0.0.0",
+  "description": "AI-powered real estate SaaS platform for intelligent customer engagement, appointment booking, and property management.",
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "test": "vitest run",
     "preview": "vite preview",
-    "test": "vitest run"
+    "check": "npm run lint && npm run build"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.2",

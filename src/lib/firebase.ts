@@ -4,6 +4,8 @@ import { getFirestore } from "firebase/firestore";
 import { env } from "./env";
 
 const firebaseConfig = {
+
+
   apiKey: env.firebase.apiKey,
   authDomain: env.firebase.authDomain,
   projectId: env.firebase.projectId,
