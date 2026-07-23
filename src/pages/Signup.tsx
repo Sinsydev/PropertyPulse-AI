@@ -3,6 +3,8 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import { useNavigate } from "react-router-dom";
 import { routes } from "../routes/routes";
+import { getAuthErrorMessage } from "../services/authService";
+import Button from "../components/Button";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
@@ -16,11 +18,7 @@ export default function Signup() {
       await createUserWithEmailAndPassword(auth, email, password);
       navigate(routes.dashboard);
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("Something went wrong");
-      }
+      setError(getAuthErrorMessage(err));
     }
   };
 
@@ -47,12 +45,9 @@ export default function Signup() {
           <p className="mb-3 text-sm text-red-400">{error}</p>
         ) : null}
 
-        <button
-          onClick={handleSignup}
-          className="w-full py-2 bg-yellow-500 text-black font-semibold rounded"
-        >
+        <Button onClick={handleSignup} className="w-full">
           Create Account
-        </button>
+        </Button>
 
       </div>
     </div>

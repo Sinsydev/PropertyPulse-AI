@@ -15,11 +15,15 @@ interface EnvConfig {
 function getEnvVar(name: string): string {
   const value = import.meta.env[name];
 
-  if (!value) {
-    throw new Error(`Missing environment variable: ${name}`);
+  if (value) {
+    return value;
   }
 
-  return value;
+  if (import.meta.env.MODE === "test") {
+    return "";
+  }
+
+  throw new Error(`Missing environment variable: ${name}`);
 }
 
 export const env: EnvConfig = {

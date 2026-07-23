@@ -85,7 +85,7 @@ export default function Dashboard() {
 
       setAiMessages((prev) => [
         ...prev,
-        { type: "system", text: "⚠️ AI server error" },
+        { type: "system", text: "⚠️ AI service unavailable" },
       ]);
     }
   };

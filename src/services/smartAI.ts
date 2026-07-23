@@ -1,6 +1,10 @@
 import { env } from "../lib/env";
 
-export const askAI = async (message: string) => {
+export interface AIReply {
+  reply: string;
+}
+
+export const askAI = async (message: string): Promise<AIReply> => {
   const res = await fetch(env.ai.baseUrl, {
     method: "POST",
     headers: {
@@ -9,5 +13,15 @@ export const askAI = async (message: string) => {
     body: JSON.stringify({ message }),
   });
 
-  return res.json();
+  if (!res.ok) {
+    throw new Error("AI service unavailable");
+  }
+
+  const data = await res.json();
+
+  if (typeof data?.reply !== "string" || !data.reply.trim()) {
+    throw new Error("AI service returned an invalid response");
+  }
+
+  return data as AIReply;
 };

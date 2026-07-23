@@ -8,6 +8,22 @@ import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "../lib/firebase";
 import type { AuthUserProfile, SignupResult } from "../types/auth";
 
+export const getAuthErrorMessage = (error: unknown): string => {
+  if (typeof error === "object" && error !== null && "code" in error) {
+    const code = String((error as { code?: string }).code ?? "");
+
+    if (code === "auth/invalid-credential") {
+      return "Invalid email or password.";
+    }
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return "Something went wrong";
+};
+
 const USERS_COLLECTION = "users";
 
 async function createUserProfile(

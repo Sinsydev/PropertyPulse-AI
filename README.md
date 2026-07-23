@@ -22,6 +22,10 @@
 <img src="https://img.shields.io/badge/Twilio-F22F46?style=for-the-badge&logo=twilio&logoColor=white"/>
 
 </p>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 56432b3 (refactor: improve auth and AI error handling)
  
  
  ## 🚀 Overview
@@ -164,6 +168,11 @@ The platform follows a modular architecture designed for scalability, maintainab
 ---
 # 🚀 Getting Started
 
+<<<<<<< HEAD
+=======
+ # 🚀 Getting Started
+
+>>>>>>> 56432b3 (refactor: improve auth and AI error handling)
 Follow the steps below to set up and run the project locally.
 
 ## 📋 Prerequisites
@@ -223,7 +232,11 @@ VITE_FIREBASE_APP_ID=
 
 ---
 
+<<<<<<< HEAD
  ▶️ Running the Development Server
+=======
+## ▶️ Running the Project
+>>>>>>> 56432b3 (refactor: improve auth and AI error handling)
 
 Start the development server:
 
@@ -248,6 +261,12 @@ To preview the production build locally:
 ```bash
 npm run preview
 ```
+<<<<<<< HEAD
+=======
+
+---
+
+>>>>>>> 56432b3 (refactor: improve auth and AI error handling)
 ## 🏛️ Design Principles
 
 PropertyPulse AI was designed around the following principles:
