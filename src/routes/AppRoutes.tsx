@@ -5,16 +5,17 @@ import Signup from "../pages/Signup";
 import Dashboard from "../pages/Dashboard";
 import Onboarding from "../pages/Onboarding";
 import ProtectedRoute from "../components/ProtectedRoute";
+import { routes } from "./routes";
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+        <Route path={routes.home} element={<Landing />} />
+        <Route path={routes.login} element={<Login />} />
+        <Route path={routes.signup} element={<Signup />} />
         <Route
-          path="/dashboard"
+          path={routes.dashboard}
           element={
             <ProtectedRoute>
               <Dashboard />
@@ -22,7 +23,7 @@ export default function AppRoutes() {
           }
         />
         <Route
-          path="/onboarding"
+          path={routes.onboarding}
           element={
             <ProtectedRoute>
               <Onboarding />
