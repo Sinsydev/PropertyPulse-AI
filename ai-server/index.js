@@ -5,13 +5,35 @@ import twilio from "twilio";
 
 dotenv.config();
 
+const TWILIO_WEBHOOK_URL = process.env.TWILIO_WEBHOOK_URL;
+const allowedOrigins = (process.env.ALLOWED_ORIGINS ?? "http://localhost:5173")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+if (!TWILIO_WEBHOOK_URL) {
+  throw new Error(
+    "Missing required environment variable: TWILIO_WEBHOOK_URL"
+  );
+}
+
 const app = express();
 
 // =========================
 // MIDDLEWARE
 // =========================
 
-app.use(cors());
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+  })
+);
 
 app.use(express.json());
 
@@ -144,9 +166,9 @@ app.post("/voice", (req, res) => {
   });
 
   // AI LISTENS HERE
-    twiml.gather({
+  twiml.gather({
     input: "speech",
-    action: "https://subprime-shock-duty.ngrok-free.dev/process-speech",
+    action: TWILIO_WEBHOOK_URL,
     method: "POST",
     speechTimeout: "auto",
   }).say(
