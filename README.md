@@ -22,22 +22,7 @@
 <img src="https://img.shields.io/badge/Twilio-F22F46?style=for-the-badge&logo=twilio&logoColor=white"/>
 
 </p>
-
----
-
-## ⚙️ Environment Setup
-
-Create a local environment file before running the app:
-
-```bash
-cp .env.example .env.local
-```
-
-Fill in your Firebase values in [.env.local](.env.local) using the template in [.env.example](.env.example).
-
-This project now validates required environment variables at startup so missing configuration fails fast instead of breaking later in the app.
-
----
+ 
  
  ## 🚀 Overview
 
@@ -177,7 +162,92 @@ The long-term vision extends beyond an AI receptionist to an intelligent custome
 The platform follows a modular architecture designed for scalability, maintainability, and high-performance conversational workflows.
 
 ---
+# 🚀 Getting Started
 
+Follow the steps below to set up and run the project locally.
+
+## 📋 Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- **Node.js** (v18 or later recommended)
+- **npm** or **pnpm**
+- A **Firebase** project with Authentication and Firestore configured
+- **Git**
+
+Verify your installation:
+
+```bash
+node -v
+npm -v
+```
+
+---
+
+## 📦 Installation
+
+Clone the repository and install the project dependencies.
+
+```bash
+git clone https://github.com/Sinsydev/Propertypulse-ai.git
+cd Propertypulse-ai
+npm install
+```
+
+---
+
+## ⚙️ Environment Setup
+
+Create a local environment file before running the application.
+
+```bash
+cp .env.example .env.local
+```
+
+Populate `.env.local` using the template provided in `.env.example` with your Firebase configuration.
+
+### Required Environment Variables
+
+```env
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+VITE_FIREBASE_STORAGE_BUCKET=
+VITE_FIREBASE_MESSAGING_SENDER_ID=
+VITE_FIREBASE_APP_ID=
+```
+
+> **Note:** The application validates all required environment variables during startup. Missing or invalid configuration will cause the application to fail fast with a clear error message, helping prevent runtime issues and simplifying debugging.
+
+> **Security:** Never commit `.env.local` or any file containing production credentials. Use `.env.example` as the template for local development.
+
+---
+
+ ▶️ Running the Development Server
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+Then open your browser and navigate to:
+
+```text
+http://localhost:5173
+```
+
+To create a production build:
+
+```bash
+npm run build
+```
+
+To preview the production build locally:
+
+```bash
+npm run preview
+```
 ## 🏛️ Design Principles
 
 PropertyPulse AI was designed around the following principles:
