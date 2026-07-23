@@ -16,6 +16,11 @@ import type { LeadRecord } from "../types/business";
 import { getBusinessByUser } from "../services/businessService";
 import { routes } from "../routes/routes";
 
+type ChatMessage = {
+  type: "user" | "ai" | "system";
+  text: string;
+};
+
 export default function Dashboard() {
   const navigate = useNavigate();
 
@@ -37,61 +42,54 @@ export default function Dashboard() {
   /* =========================
      AI CHAT STATE
   ========================= */
-  const [aiMessages, setAiMessages] = useState<
-    { type: "user" | "ai" | "system"; text: string }[]
-  >([{ type: "system", text: "AI Receptionist Online..." }]);
+  const [aiMessages, setAiMessages] = useState<ChatMessage[]>([
+    { type: "system", text: "AI Receptionist Online..." },
+  ]);
 
   const [input, setInput] = useState<string>("");
 
   const sendMessage = async () => {
-  if (!input) return;
+    if (!input.trim()) return;
 
-  const userMsg = input;
+    const userMessage = input.trim();
 
-  setAiMessages((prev) => [
-    ...prev,
-    { type: "user", text: userMsg },
-  ]);
-
-  setInput("");
-
-  try {
-    const ai = await askAI(userMsg);
-
-    const reply = ai.reply;
-
-    setAiMessages((prev) => [
-      ...prev,
-      { type: "ai", text: reply },
-    ]);
+    setAiMessages((prev) => [...prev, { type: "user", text: userMessage }]);
+    setInput("");
 
     try {
-      const data = JSON.parse(reply);
+      const ai = await askAI(userMessage);
+      const reply = ai.reply;
 
-      if (data.name && data.phone && data.service) {
-        await createLead({
-          name: String(data.name),
-          phone: String(data.phone),
-          service: String(data.service),
-          status: "new",
-          businessId: businessId,
-        });
+      setAiMessages((prev) => [...prev, { type: "ai", text: reply }]);
 
-        const updated = await getLeads(businessId);
-        setLeads(updated);
+      try {
+        const data = JSON.parse(reply);
+
+        if (data.name && data.phone && data.service) {
+          await createLead({
+            name: String(data.name),
+            phone: String(data.phone),
+            service: String(data.service),
+            status: "new",
+            businessId,
+          });
+
+          const updatedLeads = await getLeads(businessId);
+          setLeads(updatedLeads);
+        }
+      } catch {
+        // ignore non-JSON responses from the AI service
       }
-    } catch {
-      // ignore if not JSON
-    }
-  } catch (err) {
-    console.error(err);
+    } catch (err) {
+      console.error(err);
 
-    setAiMessages((prev) => [
-      ...prev,
-      { type: "system", text: "⚠️ AI server error" },
-    ]);
-  }
-};
+      setAiMessages((prev) => [
+        ...prev,
+        { type: "system", text: "⚠️ AI server error" },
+      ]);
+    }
+  };
+
   /* =========================
      AUTH
   ========================= */
@@ -117,8 +115,17 @@ export default function Dashboard() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const user = auth.currentUser;
-        if (!user) return;
+        const user = await new Promise<{ uid: string } | null>((resolve) => {
+          const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+            unsubscribe();
+            resolve(currentUser ? { uid: currentUser.uid } : null);
+          });
+        });
+
+        if (!user) {
+          navigate(routes.login);
+          return;
+        }
 
         const business = await getBusinessByUser(user.uid);
 
@@ -130,7 +137,7 @@ export default function Dashboard() {
         setBusinessId(business.id);
 
         const leadsData = await getLeads(business.id);
-        setLeads(leadsData); 
+        setLeads(leadsData);
         setLoading(false);
       } catch (err) {
         console.error(err);
@@ -154,7 +161,7 @@ export default function Dashboard() {
 
     await createLead({
       ...form,
-      businessId: businessId,
+      businessId,
     });
 
     setForm({
@@ -167,8 +174,8 @@ export default function Dashboard() {
 
     setShowModal(false);
 
-    const updated = await getLeads(businessId);
-    setLeads(updated);
+    const updatedLeads = await getLeads(businessId);
+    setLeads(updatedLeads);
   };
 
   return (
