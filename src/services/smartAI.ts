@@ -1,5 +1,7 @@
+import { env } from "../lib/env";
+
 export const askAI = async (message: string) => {
-  const res = await fetch("http://localhost:5001/chat", {
+  const res = await fetch(env.ai.baseUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

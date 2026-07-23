@@ -7,6 +7,9 @@ interface EnvConfig {
     messagingSenderId: string;
     appId: string;
   };
+  ai: {
+    baseUrl: string;
+  };
 }
 
 function getEnvVar(name: string): string {
@@ -27,5 +30,8 @@ export const env: EnvConfig = {
     storageBucket: getEnvVar("VITE_FIREBASE_STORAGE_BUCKET"),
     messagingSenderId: getEnvVar("VITE_FIREBASE_MESSAGING_SENDER_ID"),
     appId: getEnvVar("VITE_FIREBASE_APP_ID"),
+  },
+  ai: {
+    baseUrl: getEnvVar("VITE_AI_BASE_URL"),
   },
 };
