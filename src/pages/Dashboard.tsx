@@ -12,7 +12,7 @@ import { signOut } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import { useNavigate } from "react-router-dom";
 import { getLeads, createLead } from "../services/leadService";
-import type { Lead } from "../services/leadService";
+import type { LeadRecord } from "../types/business";
 import { getBusinessByUser } from "../services/businessService";
 import { routes } from "../routes/routes";
 
@@ -20,13 +20,13 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState<string>("overview");
-  const [leads, setLeads] = useState<Lead[]>([]);
+  const [leads, setLeads] = useState<LeadRecord[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   const [showModal, setShowModal] = useState<boolean>(false);
   const [businessId, setBusinessId] = useState<string>("");
 
-  const [form, setForm] = useState<Omit<Lead, "id">>({
+  const [form, setForm] = useState<Omit<LeadRecord, "id" | "createdAt">>({
     name: "",
     phone: "",
     service: "",
