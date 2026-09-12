@@ -1,3 +1,13 @@
+export const LEAD_STATUSES = [
+  "new",
+  "contacted",
+  "qualified",
+  "booked",
+  "closed",
+] as const;
+
+export type LeadStatus = (typeof LEAD_STATUSES)[number];
+
 export interface BusinessRecord {
   id: string;
   userId: string;
@@ -12,7 +22,7 @@ export interface LeadRecord {
   name: string;
   phone: string;
   service: string;
-  status: string;
+  status: LeadStatus;
   businessId: string;
   createdAt?: Date;
 }

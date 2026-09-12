@@ -12,7 +12,7 @@ import { signOut } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import { useNavigate } from "react-router-dom";
 import { getLeads, createLead } from "../services/leadService";
-import type { LeadRecord } from "../types/business";
+import { LEAD_STATUSES, type LeadRecord, type LeadStatus } from "../types/business";
 import { getBusinessByUser } from "../services/businessService";
 import { routes } from "../routes/routes";
 
@@ -38,6 +38,8 @@ export default function Dashboard() {
     businessId: "",
     status: "new",
   });
+
+  const leadStatusOptions: LeadStatus[] = [...LEAD_STATUSES];
 
   /* =========================
      AI CHAT STATE
@@ -356,9 +358,11 @@ export default function Dashboard() {
                 onChange={handleChange}
                 className="w-full p-2 mb-4 bg-white/5 rounded"
               >
-                <option value="new">New</option>
-                <option value="contacted">Contacted</option>
-                <option value="booked">Booked</option>
+                {leadStatusOptions.map((status) => (
+                  <option key={status} value={status}>
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                  </option>
+                ))}
               </select>
 
               <div className="flex gap-2">
