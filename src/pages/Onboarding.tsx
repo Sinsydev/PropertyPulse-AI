@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { auth } from "../lib/firebase";
-import { createBusiness } from "../services/businessService";
+import {
+  createBusiness,
+  normalizeBusinessInput,
+} from "../services/businessService";
 import { useNavigate } from "react-router-dom";
 import { routes } from "../routes/routes";
 
@@ -21,24 +24,28 @@ export default function Onboarding() {
         return;
       }
 
-      setError("");
-      await createBusiness({
+      const normalizedBusiness = normalizeBusinessInput({
         userId: user.uid,
         businessName,
         phone,
         service,
       });
 
+      setError("");
+      await createBusiness(normalizedBusiness);
+
       navigate(routes.dashboard);
     } catch (err) {
       console.error(err);
-      setError("Error saving business");
+      setError(
+        err instanceof Error ? err.message : "Error saving business"
+      );
     }
   };
 
   return (
     <div className="h-screen flex items-center justify-center bg-black text-white">
-      <div className="p-8 bg-white/5 border border-yellow-500/20 rounded-xl w-[350px]">
+      <div className="p-8 bg-white/5 border border-yellow-500/20 rounded-xl w-87.5">
 
         <h2 className="text-xl font-bold mb-4">
           Setup Your Business

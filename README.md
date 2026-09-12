@@ -22,19 +22,15 @@
 <img src="https://img.shields.io/badge/Twilio-F22F46?style=for-the-badge&logo=twilio&logoColor=white"/>
 
 </p>
-<<<<<<< HEAD
-=======
 
->>>>>>> 56432b3 (refactor: improve auth and AI error handling)
- 
- 
- ## 🚀 Overview
+## 🚀 Overview
 
 **PropertyPulse AI** is an AI-powered receptionist and customer engagement platform designed to help businesses automate customer interactions, capture qualified leads, schedule appointments, and deliver fast, intelligent responses through conversational AI.
 
 Built with a modern React and TypeScript architecture, the platform combines AI-driven conversations, secure authentication, real-time communication workflows, and responsive user experiences to streamline customer engagement across desktop and mobile devices.
- 
+
 ---
+
 ## 🚨 The Problem
 
 Businesses frequently lose potential customers because they cannot respond instantly to inquiries outside business hours or during periods of high demand. Manual appointment scheduling, delayed responses, and fragmented communication often result in missed opportunities and reduced customer satisfaction.
@@ -50,11 +46,10 @@ PropertyPulse AI provides an AI-powered virtual receptionist capable of engaging
 Built using React, TypeScript, Firebase, OpenAI, and Twilio, the platform demonstrates how conversational AI can automate customer engagement while remaining scalable, secure, and responsive across devices.
 
 The long-term vision extends beyond an AI receptionist to an intelligent customer engagement platform capable of supporting voice interactions, CRM integrations, predictive analytics, and multi-channel communication.
- 
- 
 
 ---
- ## ✨ Core Features
+
+## ✨ Core Features
 
 ### 🤖 AI Assistant
 
@@ -105,15 +100,17 @@ The long-term vision extends beyond an AI receptionist to an intelligent custome
 
 ---
 
- ## 🛠 Tech Stack
+## 🛠 Tech Stack
 
 ### Frontend
+
 - React
 - TypeScript
 - Tailwind CSS
 - Context API
 
 ### Backend & Services
+
 - Firebase Authentication
 - Cloud Firestore
 - Twilio
@@ -121,6 +118,7 @@ The long-term vision extends beyond an AI receptionist to an intelligent custome
 - REST APIs
 
 ### Development Tools
+
 - Vite
 - Git & GitHub
 - Postman
@@ -166,13 +164,9 @@ The long-term vision extends beyond an AI receptionist to an intelligent custome
 The platform follows a modular architecture designed for scalability, maintainability, and high-performance conversational workflows.
 
 ---
+
 # 🚀 Getting Started
 
-<<<<<<< HEAD
-=======
- # 🚀 Getting Started
-
->>>>>>> 56432b3 (refactor: improve auth and AI error handling)
 Follow the steps below to set up and run the project locally.
 
 ## 📋 Prerequisites
@@ -226,17 +220,42 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=
 VITE_FIREBASE_APP_ID=
 ```
 
+---
+
+## 🧠 AI Server Setup
+
+The AI server runs separately from the frontend and requires its own environment configuration.
+
+Create a backend env file and populate it with your webhook and allowed origin settings.
+
+```bash
+cd ai-server
+cp .env.example .env
+```
+
+Required backend variables:
+
+```env
+TWILIO_WEBHOOK_URL=https://your.public-domain.com/process-speech
+ALLOWED_ORIGINS=http://localhost:5173
+```
+
+Start the AI backend from the `ai-server` folder:
+
+```bash
+npm install
+npm start
+```
+
+The backend will listen on `http://localhost:5001` and the frontend will call it via `VITE_AI_BASE_URL`.
+
 > **Note:** The application validates all required environment variables during startup. Missing or invalid configuration will cause the application to fail fast with a clear error message, helping prevent runtime issues and simplifying debugging.
 
 > **Security:** Never commit `.env.local` or any file containing production credentials. Use `.env.example` as the template for local development.
 
 ---
 
-<<<<<<< HEAD
- ▶️ Running the Development Server
-=======
-## ▶️ Running the Project
->>>>>>> 56432b3 (refactor: improve auth and AI error handling)
+▶️ Running the Development Server
 
 Start the development server:
 
@@ -261,12 +280,9 @@ To preview the production build locally:
 ```bash
 npm run preview
 ```
-<<<<<<< HEAD
-=======
 
 ---
 
->>>>>>> 56432b3 (refactor: improve auth and AI error handling)
 ## 🏛️ Design Principles
 
 PropertyPulse AI was designed around the following principles:
@@ -280,7 +296,6 @@ PropertyPulse AI was designed around the following principles:
 • AI-first Design
 
 ---
- 
 
 # 🚧 Technical Challenges
 

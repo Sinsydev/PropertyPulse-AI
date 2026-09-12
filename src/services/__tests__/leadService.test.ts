@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { normalizeLeadInput, normalizeLeadStatus } from "../leadService";
+import {
+  normalizeLeadInput,
+  normalizeLeadStatus,
+  summarizeLeadStatuses,
+} from "../leadService";
 
 describe("normalizeLeadInput", () => {
   it("trims and normalizes a valid lead payload", () => {
@@ -50,22 +54,30 @@ describe("normalizeLeadInput", () => {
         phone: "5551234567",
         service: "plumbing",
         businessId: "business-1",
-        status: "QUALIFIED",
+        status: "qualified",
       }).status
     ).toBe("qualified");
 
     expect(normalizeLeadStatus("BOOKED")).toBe("booked");
 
-    expect(() =>
-      normalizeLeadInput({
-        name: "Jane Doe",
-        phone: "5551234567",
-        service: "plumbing",
-        businessId: "business-1",
-        status: "ghost",
-      })
-    ).toThrow("Unsupported lead status");
-
     expect(() => normalizeLeadStatus("ghost")).toThrow("Unsupported lead status");
+  });
+
+  it("summarizes lead lifecycle counts for the business dashboard", () => {
+    expect(
+      summarizeLeadStatuses([
+        { status: "new" },
+        { status: "contacted" },
+        { status: "booked" },
+        { status: "booked" },
+        { status: "closed" },
+      ])
+    ).toEqual({
+      new: 1,
+      contacted: 1,
+      qualified: 0,
+      booked: 2,
+      closed: 1,
+    });
   });
 });

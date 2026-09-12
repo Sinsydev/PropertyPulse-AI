@@ -11,7 +11,12 @@ import { askAI } from "../services/smartAI";
 import { signOut } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import { useNavigate } from "react-router-dom";
-import { getLeads, createLead } from "../services/leadService";
+import {
+  getLeads,
+  createLead,
+  updateLeadStatus,
+  summarizeLeadStatuses,
+} from "../services/leadService";
 import { LEAD_STATUSES, type LeadRecord, type LeadStatus } from "../types/business";
 import { getBusinessByUser } from "../services/businessService";
 import { routes } from "../routes/routes";
@@ -40,6 +45,7 @@ export default function Dashboard() {
   });
 
   const leadStatusOptions: LeadStatus[] = [...LEAD_STATUSES];
+  const leadStatusSummary = summarizeLeadStatuses(leads);
 
   /* =========================
      AI CHAT STATE
@@ -180,6 +186,20 @@ export default function Dashboard() {
     setLeads(updatedLeads);
   };
 
+  const handleLeadStatusChange = async (
+    leadId: string,
+    nextStatus: string
+  ) => {
+    try {
+      await updateLeadStatus(leadId, nextStatus);
+
+      const updatedLeads = await getLeads(businessId);
+      setLeads(updatedLeads);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-black text-white flex">
       {/* SIDEBAR */}
@@ -237,26 +257,26 @@ export default function Dashboard() {
             <div className="grid md:grid-cols-4 gap-4">
               <div className="p-4 bg-white/5 rounded-xl">
                 <PhoneCall className="text-yellow-400 mb-2" />
-                <p className="text-2xl font-bold">24</p>
-                <p className="text-gray-400 text-sm">Calls</p>
+                <p className="text-2xl font-bold">{leadStatusSummary.new}</p>
+                <p className="text-gray-400 text-sm">New Leads</p>
               </div>
 
               <div className="p-4 bg-white/5 rounded-xl">
                 <Users className="text-yellow-400 mb-2" />
                 <p className="text-2xl font-bold">{leads.length}</p>
-                <p className="text-gray-400 text-sm">Leads</p>
+                <p className="text-gray-400 text-sm">Total Leads</p>
               </div>
 
               <div className="p-4 bg-white/5 rounded-xl">
                 <CalendarCheck className="text-yellow-400 mb-2" />
-                <p className="text-2xl font-bold">12</p>
+                <p className="text-2xl font-bold">{leadStatusSummary.booked}</p>
                 <p className="text-gray-400 text-sm">Bookings</p>
               </div>
 
               <div className="p-4 bg-white/5 rounded-xl">
                 <Bot className="text-green-400 mb-2" />
-                <p className="text-2xl font-bold">Online</p>
-                <p className="text-gray-400 text-sm">AI</p>
+                <p className="text-2xl font-bold">{leadStatusSummary.qualified}</p>
+                <p className="text-gray-400 text-sm">Qualified</p>
               </div>
             </div>
 
@@ -312,10 +332,27 @@ export default function Dashboard() {
                   key={lead.id}
                   className="p-4 bg-white/5 rounded-xl border border-white/10"
                 >
-                  <p className="font-semibold">{lead.name}</p>
-                  <p className="text-gray-400 text-sm">{lead.phone}</p>
-                  <p className="text-gray-400 text-sm">{lead.service}</p>
-                  <p className="text-yellow-400 text-sm">{lead.status}</p>
+                  <div className="flex justify-between gap-3 items-start">
+                    <div>
+                      <p className="font-semibold">{lead.name}</p>
+                      <p className="text-gray-400 text-sm">{lead.phone}</p>
+                      <p className="text-gray-400 text-sm">{lead.service}</p>
+                    </div>
+
+                    <select
+                      value={lead.status}
+                      onChange={(event) =>
+                        handleLeadStatusChange(lead.id, event.target.value)
+                      }
+                      className="bg-black text-yellow-400 border border-yellow-500/30 rounded px-2 py-1 text-sm"
+                    >
+                      {leadStatusOptions.map((status) => (
+                        <option key={status} value={status}>
+                          {status.charAt(0).toUpperCase() + status.slice(1)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               ))
             )}

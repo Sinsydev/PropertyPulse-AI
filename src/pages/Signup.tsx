@@ -24,7 +24,7 @@ export default function Signup() {
 
   return (
     <div className="h-screen flex items-center justify-center bg-black text-white">
-      <div className="p-8 bg-white/5 border border-yellow-500/20 rounded-2xl w-[350px]">
+      <div className="p-8 bg-white/5 border border-yellow-500/20 rounded-2xl w-87.5">
 
         <h2 className="text-2xl font-bold mb-6">Signup</h2>
 
