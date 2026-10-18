@@ -1,4 +1,4 @@
-import { db } from "../lib/firebase";
+import { requireDb } from "../lib/firebase";
 import {
   addDoc,
   collection,
@@ -12,6 +12,9 @@ const BUSINESSES_COLLECTION = "businesses";
 
 export type BusinessInput = Omit<BusinessRecord, "id" | "createdAt">;
 
+const normalizePhoneNumber = (value: string): string =>
+  value.replace(/\D/g, "");
+
 export const normalizeBusinessInput = (
   business: Partial<BusinessInput>
 ): BusinessInput => {
@@ -19,9 +22,13 @@ export const normalizeBusinessInput = (
   const businessName =
     typeof business.businessName === "string" ? business.businessName.trim() : "";
   const phone =
-    typeof business.phone === "string" ? business.phone.replace(/\D/g, "") : "";
+    typeof business.phone === "string" ? normalizePhoneNumber(business.phone) : "";
   const service =
     typeof business.service === "string" ? business.service.trim().toLowerCase() : "";
+  const twilioNumber =
+    typeof business.twilioNumber === "string"
+      ? normalizePhoneNumber(business.twilioNumber)
+      : "";
 
   if (!userId) {
     throw new Error("User ID is required");
@@ -35,11 +42,16 @@ export const normalizeBusinessInput = (
     throw new Error("Business phone is required");
   }
 
+  if (!service) {
+    throw new Error("Business service is required");
+  }
+
   return {
     userId,
     businessName,
     phone,
     service,
+    ...(twilioNumber ? { twilioNumber } : {}),
   };
 };
 
@@ -48,7 +60,7 @@ export const createBusiness = async (
 ): Promise<void> => {
   const normalizedBusiness = normalizeBusinessInput(data);
 
-  await addDoc(collection(db, BUSINESSES_COLLECTION), {
+  await addDoc(collection(requireDb(), BUSINESSES_COLLECTION), {
     ...normalizedBusiness,
     createdAt: new Date(),
   });
@@ -58,7 +70,7 @@ export const getBusinessByUser = async (
   userId: string
 ): Promise<BusinessRecord | null> => {
   const q = query(
-    collection(db, BUSINESSES_COLLECTION),
+    collection(requireDb(), BUSINESSES_COLLECTION),
     where("userId", "==", userId)
   );
 
@@ -72,5 +84,47 @@ export const getBusinessByUser = async (
   return {
     id: document.id,
     ...data,
+  };
+};
+
+export const getBusinessByInboundNumber = async (
+  inboundNumber: string
+): Promise<BusinessRecord | null> => {
+  const normalized = normalizePhoneNumber(inboundNumber);
+
+  if (!normalized) return null;
+
+  const twilioQuery = query(
+    collection(requireDb(), BUSINESSES_COLLECTION),
+    where("twilioNumber", "==", normalized)
+  );
+
+  const twilioSnapshot = await getDocs(twilioQuery);
+
+  if (!twilioSnapshot.empty) {
+    const document = twilioSnapshot.docs[0];
+    const data = document.data() as Omit<BusinessRecord, "id">;
+
+    return {
+      id: document.id,
+      ...data,
+    };
+  }
+
+  const businessPhoneQuery = query(
+    collection(requireDb(), BUSINESSES_COLLECTION),
+    where("phone", "==", normalized)
+  );
+
+  const businessPhoneSnapshot = await getDocs(businessPhoneQuery);
+
+  if (businessPhoneSnapshot.empty) return null;
+
+  const businessDocument = businessPhoneSnapshot.docs[0];
+  const businessData = businessDocument.data() as Omit<BusinessRecord, "id">;
+
+  return {
+    id: businessDocument.id,
+    ...businessData,
   };
 };

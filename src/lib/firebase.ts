@@ -1,20 +1,46 @@
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-import { env } from "./env";
+import { initializeApp, type FirebaseApp } from "firebase/app";
+import { getAuth, type Auth } from "firebase/auth";
+import { getFirestore, type Firestore } from "firebase/firestore";
+import { env, isEnvConfigured } from "./env";
 
-const firebaseConfig = {
+let app: FirebaseApp | null = null;
+let authClient: Auth | null = null;
+let dbClient: Firestore | null = null;
 
+if (isEnvConfigured) {
+  app = initializeApp({
+    apiKey: env.firebase.apiKey,
+    authDomain: env.firebase.authDomain,
+    projectId: env.firebase.projectId,
+    storageBucket: env.firebase.storageBucket,
+    messagingSenderId: env.firebase.messagingSenderId,
+    appId: env.firebase.appId,
+  });
 
-  apiKey: env.firebase.apiKey,
-  authDomain: env.firebase.authDomain,
-  projectId: env.firebase.projectId,
-  storageBucket: env.firebase.storageBucket,
-  messagingSenderId: env.firebase.messagingSenderId,
-  appId: env.firebase.appId,
-};
+  authClient = getAuth(app);
+  dbClient = getFirestore(app);
+}
 
-const app = initializeApp(firebaseConfig);
+export const auth = authClient;
+export const db = dbClient;
+export const isFirebaseReady = Boolean(app && authClient && dbClient);
 
-export const auth = getAuth(app);
-export const db = getFirestore(app);
+export function requireAuth(): Auth {
+  if (!authClient) {
+    throw new Error(
+      "Firebase Auth is not configured. Add your Firebase Web App values to .env.local; copying .env.example alone is not enough. Restart npm run dev after updating it."
+    );
+  }
+
+  return authClient;
+}
+
+export function requireDb(): Firestore {
+  if (!dbClient) {
+    throw new Error(
+      "Firebase is not configured. Add your Firebase Web App values to .env.local; copying .env.example alone is not enough. Restart npm run dev after updating it."
+    );
+  }
+
+  return dbClient;
+}

@@ -2,8 +2,10 @@
   "name": "ai-server",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "test": "node --test test.js"
   },
   "keywords": [],
   "author": "",
@@ -13,6 +15,7 @@
     "cors": "^2.8.5",
     "dotenv": "^17.4.2",
     "express": "^5.1.0",
+    "firebase-admin": "^14.5.0",
     "openai": "^6.34.0",
     "twilio": "^5.13.1"
   }

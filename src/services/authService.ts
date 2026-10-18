@@ -5,7 +5,7 @@ import {
   type UserCredential,
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import { auth, db } from "../lib/firebase";
+import { requireAuth, requireDb } from "../lib/firebase";
 import type { AuthUserProfile, SignupResult } from "../types/auth";
 
 
@@ -38,7 +38,7 @@ async function createUserProfile(
     businessId: null,
   };
 
-  await setDoc(doc(db, USERS_COLLECTION, userId), profile);
+  await setDoc(doc(requireDb(), USERS_COLLECTION, userId), profile);
 }
 
 export const signup = async (
@@ -46,7 +46,7 @@ export const signup = async (
   password: string
 ): Promise<SignupResult> => {
   const userCredential: UserCredential = await createUserWithEmailAndPassword(
-    auth,
+    requireAuth(),
     email,
     password
   );
@@ -62,9 +62,9 @@ export const signup = async (
 };
 
 export const login = (email: string, password: string) => {
-  return signInWithEmailAndPassword(auth, email, password);
+  return signInWithEmailAndPassword(requireAuth(), email, password);
 };
 
 export const logout = () => {
-  return signOut(auth);
+  return signOut(requireAuth());
 };

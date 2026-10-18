@@ -14,6 +14,7 @@ export interface BusinessRecord {
   businessName: string;
   phone: string;
   service: string;
+  twilioNumber?: string;
   createdAt?: Date;
 }
 

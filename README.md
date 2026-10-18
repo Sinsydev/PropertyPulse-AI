@@ -226,19 +226,30 @@ VITE_FIREBASE_APP_ID=
 
 The AI server runs separately from the frontend and requires its own environment configuration.
 
-Create a backend env file and populate it with your webhook and allowed origin settings.
-
-```bash
-cd ai-server
-cp .env.example .env
-```
-
-Required backend variables:
+Create `ai-server/.env` from `ai-server/.env.example` and populate the webhook,
+Twilio authentication, and Firebase Admin settings.
 
 ```env
 TWILIO_WEBHOOK_URL=https://your.public-domain.com/process-speech
+TWILIO_AUTH_TOKEN=your_twilio_auth_token
 ALLOWED_ORIGINS=http://localhost:5173
+GOOGLE_APPLICATION_CREDENTIALS=C:\path\to\firebase-service-account.json
+FIREBASE_PROJECT_ID=your-firebase-project-id
 ```
+
+The Firebase service account must have Firestore access. Keep its JSON file outside
+the repository, or provide its JSON content through the secret environment variable
+`FIREBASE_SERVICE_ACCOUNT_JSON`. On Google Cloud, Application Default Credentials
+can be used instead. Do not use the frontend Firebase API key for server-side writes.
+
+Set the Twilio voice webhook to `https://your.public-domain.com/voice`. The voice
+handler gathers speech and posts it to `TWILIO_WEBHOOK_URL`. Both webhook routes
+validate Twilio's request signature before handling calls.
+
+In business onboarding, enter the Twilio inbound number if it differs from the
+business phone number. The inbound number is matched against `twilioNumber` first,
+then the existing business `phone`; numbers are normalized before they are saved.
+Calls with incomplete details or no business mapping are not saved as leads.
 
 Start the AI backend from the `ai-server` folder:
 

@@ -34,17 +34,23 @@ describe("normalizeLeadInput", () => {
       })
     ).toThrow("Lead name is required");
 
-    expect(
+    expect(() =>
+      normalizeLeadInput({
+        name: "Jane Doe",
+        phone: "",
+        service: "plumbing",
+        businessId: "business-1",
+      })
+    ).toThrow("Lead phone is required");
+
+    expect(() =>
       normalizeLeadInput({
         name: "Jane Doe",
         phone: "5551234567",
         service: "   ",
         businessId: "business-1",
       })
-    ).toMatchObject({
-      status: "new",
-      service: "",
-    });
+    ).toThrow("Lead service is required");
   });
 
   it("normalizes lifecycle statuses into the supported production values", () => {

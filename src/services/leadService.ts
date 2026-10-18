@@ -1,4 +1,4 @@
-import { db } from "../lib/firebase";
+import { requireDb } from "../lib/firebase";
 import {
   addDoc,
   collection,
@@ -66,6 +66,14 @@ export const normalizeLeadInput = (
     throw new Error("Lead name is required");
   }
 
+  if (!phone) {
+    throw new Error("Lead phone is required");
+  }
+
+  if (!service) {
+    throw new Error("Lead service is required");
+  }
+
   if (!businessId) {
     throw new Error("Business ID is required");
   }
@@ -83,7 +91,7 @@ export const getLeads = async (
   businessId: string
 ): Promise<LeadRecord[]> => {
   const q = query(
-    collection(db, LEADS_COLLECTION),
+    collection(requireDb(), LEADS_COLLECTION),
     where("businessId", "==", businessId)
   );
 
@@ -104,7 +112,7 @@ export const createLead = async (
 ): Promise<void> => {
   const normalizedLead = normalizeLeadInput(lead);
 
-  await addDoc(collection(db, LEADS_COLLECTION), {
+  await addDoc(collection(requireDb(), LEADS_COLLECTION), {
     ...normalizedLead,
     createdAt: new Date(),
   });
@@ -116,7 +124,7 @@ export const updateLeadStatus = async (
 ): Promise<void> => {
   const normalizedStatus = normalizeLeadStatus(status);
 
-  await updateDoc(doc(db, LEADS_COLLECTION, leadId), {
+  await updateDoc(doc(requireDb(), LEADS_COLLECTION, leadId), {
     status: normalizedStatus,
   });
 };
